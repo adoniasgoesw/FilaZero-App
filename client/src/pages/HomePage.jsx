@@ -218,7 +218,12 @@ const HomePage = ({ currentPage, onNavigate }) => {
       
       {/* Main Content (hidden when caixa dialog is open) */}
       {shouldShowMainContent && (
-        <div className="md:ml-20 pb-16 md:pb-0">
+        <div 
+          className="md:ml-20 pb-16 md:pb-0"
+          style={{
+            paddingBottom: 'calc(4rem + env(safe-area-inset-bottom, 0px))'
+          }}
+        >
           <div className="p-6">
             {/* Header */}
             <div className="flex items-center gap-4 mb-8">

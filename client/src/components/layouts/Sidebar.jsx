@@ -87,7 +87,14 @@ const Sidebar = ({ currentPage, onNavigate, isManagementPage = false }) => {
 
       {/* Footer para mobile - oculto em telas médias e grandes e em páginas de gestão */}
       {!isManagementPage && (
-        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-[110]">
+        <div 
+          className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-[110]"
+          style={{
+            paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+            paddingLeft: 'env(safe-area-inset-left, 0px)',
+            paddingRight: 'env(safe-area-inset-right, 0px)'
+          }}
+        >
           <div className="flex items-center justify-around py-2">
             {menuItems.map((item) => {
               const Icon = item.icon;

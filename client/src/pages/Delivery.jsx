@@ -19,7 +19,12 @@ const Delivery = () => {
     <div className="min-h-screen bg-white">
       <Sidebar currentPage={currentPage} onNavigate={handleNavigate} />
       
-      <div className="md:ml-20 pb-16 md:pb-0">
+      <div 
+        className="md:ml-20 pb-16 md:pb-0"
+        style={{
+          paddingBottom: 'calc(4rem + env(safe-area-inset-bottom, 0px))'
+        }}
+      >
         <div className="p-6">
           <h1 className="text-3xl font-bold text-gray-800 mb-6">Delivery</h1>
           

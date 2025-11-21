@@ -31,7 +31,12 @@ navigate(`/${page}`);
       <Sidebar currentPage={currentPage} onNavigate={handleNavigate} />
 
       {/* Caixa 2 - Conteúdo Principal */}
-      <div className="md:ml-20 pb-16 md:pb-0">
+      <div 
+        className="md:ml-20 pb-16 md:pb-0"
+        style={{
+          paddingBottom: 'calc(4rem + env(safe-area-inset-bottom, 0px))'
+        }}
+      >
         <div className="p-6 space-y-6">
           {/* Caixa 1 - Header */}
           <div>

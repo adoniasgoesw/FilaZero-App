@@ -45,6 +45,32 @@ class AtendimentoService {
         body: JSON.stringify({ status })
       });
 
+      // Verificar se a resposta é válida antes de fazer parse
+      if (!response.ok) {
+        // Tentar parsear a mensagem de erro do servidor
+        let errorMessage = 'Erro ao atualizar status';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch (parseError) {
+          // Se não conseguir parsear, usar mensagem padrão baseada no status code
+          if (response.status === 400) {
+            errorMessage = 'Status inválido ou dados incorretos';
+          } else if (response.status === 404) {
+            errorMessage = 'Ponto de atendimento não encontrado';
+          } else if (response.status === 500) {
+            errorMessage = 'Erro interno do servidor';
+          }
+        }
+        
+        console.error(`Erro ao atualizar status (${response.status}):`, errorMessage);
+        return {
+          success: false,
+          message: errorMessage,
+          statusCode: response.status
+        };
+      }
+
       const data = await response.json();
       return data;
     } catch (error) {

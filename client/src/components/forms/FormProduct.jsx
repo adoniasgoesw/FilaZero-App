@@ -301,6 +301,30 @@ const FormProduct = forwardRef(({ onSuccess, onClose, editData = null, activeTab
           body: JSON.stringify(productData)
         });
 
+        // Verificar se a resposta é válida antes de fazer parse
+        if (!response.ok) {
+          let errorMessage = 'Erro ao criar produto';
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.message || errorMessage;
+            // Se houver detalhes do erro em desenvolvimento, incluir
+            if (errorData.error && process.env.NODE_ENV === 'development') {
+              errorMessage += `: ${errorData.error}`;
+            }
+          } catch (parseError) {
+            // Se não conseguir parsear JSON, usar mensagem baseada no status code
+            if (response.status === 400) {
+              errorMessage = 'Dados inválidos. Verifique os campos preenchidos.';
+            } else if (response.status === 500) {
+              errorMessage = 'Erro interno do servidor. Tente novamente mais tarde.';
+            } else if (response.status === 404) {
+              errorMessage = 'Categoria não encontrada.';
+            }
+          }
+          setError(errorMessage);
+          return;
+        }
+
         const result = await response.json();
 
         if (result.success) {

@@ -7,6 +7,7 @@ import Delete from '../buttons/Delete';
 import Notification from '../elements/Notification';
 import { Clock, Users, DollarSign, CheckCircle, User, Coffee, ClipboardList, Lock, Unlock, Hand } from 'lucide-react';
 import atendimentoService from '../../services/atendimentoService';
+import { buscarConfiguracaoPontosAtendimento } from '../../services/api';
 
 const ListPontosAtendimento = ({ 
   estabelecimentoId,
@@ -18,6 +19,7 @@ const ListPontosAtendimento = ({
   const [notification, setNotification] = useState({ message: '', type: 'success' });
   const [pontoDisponivelClicado, setPontoDisponivelClicado] = useState(null);
   const atualizarListaRef = useRef();
+  const [configuracao, setConfiguracao] = useState(null);
 
 
   // Função para atualizar a lista de pontos (apenas da tabela atendimentos)
@@ -28,6 +30,12 @@ const ListPontosAtendimento = ({
     console.log('Estabelecimento ID:', estabelecimentoId);
     
     try {
+      // Buscar configuração de pontos de atendimento
+      const responseConfig = await buscarConfiguracaoPontosAtendimento(estabelecimentoId);
+      if (responseConfig.success) {
+        setConfiguracao(responseConfig.data);
+      }
+      
       // Buscar pontos diretamente da tabela atendimentos
       const responseAtendimentos = await atendimentoService.listarPorEstabelecimento(estabelecimentoId);
       
@@ -61,8 +69,30 @@ const ListPontosAtendimento = ({
           };
         });
         
+        // Filtrar pontos baseado na configuração
+        const pontosFiltrados = pontosFormatados.filter(ponto => {
+          if (!responseConfig.success || !responseConfig.data) {
+            return true; // Se não houver configuração, mostrar todos
+          }
+          
+          const config = responseConfig.data;
+          
+          // Verificar se o tipo está habilitado na configuração
+          if (ponto.tipo === 'balcao' && !config.atendimento_balcao) {
+            return false;
+          }
+          if (ponto.tipo === 'mesa' && !config.atendimento_mesas) {
+            return false;
+          }
+          if (ponto.tipo === 'comanda' && !config.atendimento_comandas) {
+            return false;
+          }
+          
+          return true;
+        });
+        
         // Deduplicar pontos baseado no identificador único
-        const pontosUnicos = pontosFormatados.reduce((acc, ponto) => {
+        const pontosUnicos = pontosFiltrados.reduce((acc, ponto) => {
           const chave = `${ponto.identificador}_${ponto.tipo}`;
           if (!acc[chave]) {
             acc[chave] = ponto;
@@ -192,6 +222,12 @@ const ListPontosAtendimento = ({
       
       setLoading(true);
       try {
+        // Buscar configuração de pontos de atendimento
+        const responseConfig = await buscarConfiguracaoPontosAtendimento(estabelecimentoId);
+        if (responseConfig.success) {
+          setConfiguracao(responseConfig.data);
+        }
+        
         // Buscar pontos diretamente da tabela atendimentos
         const responseAtendimentos = await atendimentoService.listarPorEstabelecimento(estabelecimentoId);
         
@@ -225,8 +261,30 @@ const ListPontosAtendimento = ({
             };
           });
           
+          // Filtrar pontos baseado na configuração
+          const pontosFiltrados = pontosFormatados.filter(ponto => {
+            if (!responseConfig.success || !responseConfig.data) {
+              return true; // Se não houver configuração, mostrar todos
+            }
+            
+            const config = responseConfig.data;
+            
+            // Verificar se o tipo está habilitado na configuração
+            if (ponto.tipo === 'balcao' && !config.atendimento_balcao) {
+              return false;
+            }
+            if (ponto.tipo === 'mesa' && !config.atendimento_mesas) {
+              return false;
+            }
+            if (ponto.tipo === 'comanda' && !config.atendimento_comandas) {
+              return false;
+            }
+            
+            return true;
+          });
+          
           // Ordenar pontos: BALCÕES primeiro, depois MESAS/COMANDA em ordem sequencial
-          const pontosOrdenados = pontosFormatados.sort((a, b) => {
+          const pontosOrdenados = pontosFiltrados.sort((a, b) => {
             // 1. BALCÕES sempre primeiro, independente do status
             if (a.tipo === 'balcao' && b.tipo !== 'balcao') {
               return -1; // BALCÃO vem antes

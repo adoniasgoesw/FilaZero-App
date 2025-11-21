@@ -180,8 +180,9 @@ const PontoAtendimento = () => {
       setLoading(true);
       try {
         const estabelecimentoId = 7; // TODO: Pegar do contexto de auth
-        // Detectar se é balcão ou mesa baseado no ID
-        const identificador = id.includes('BALCÃO') ? id : `MESA ${id}`;
+        // O id já vem completo da URL (ex: "MESA 1", "COMANDA 1", "BALCÃO 1")
+        // Não adicionar prefixo, usar diretamente
+        const identificador = id;
         
         console.log('🔄 Carregando ponto de atendimento:', identificador);
         
@@ -196,10 +197,18 @@ const PontoAtendimento = () => {
         
         if (response.success) {
           const ponto = response.data.atendimento;
+          // Determinar tipo baseado no identificador
+          let tipo = 'mesa';
+          if (ponto.identificador.includes('BALCÃO')) {
+            tipo = 'balcao';
+          } else if (ponto.identificador.includes('COMANDA')) {
+            tipo = 'comanda';
+          }
+          
           setPontoAtendimento({
             id: ponto.id,
             identificador: ponto.identificador, // Usar o identificador correto do banco
-            tipo: 'mesa',
+            tipo: tipo,
             status: ponto.status,
             nome_ponto: ponto.nome_ponto,
             criado_em: ponto.criado_em,
@@ -228,10 +237,18 @@ const PontoAtendimento = () => {
             
             if (buscarResponse.success && isMounted) {
               const ponto = buscarResponse.data.atendimento;
+              // Determinar tipo baseado no identificador
+              let tipo = 'mesa';
+              if (ponto.identificador.includes('BALCÃO')) {
+                tipo = 'balcao';
+              } else if (ponto.identificador.includes('COMANDA')) {
+                tipo = 'comanda';
+              }
+              
               setPontoAtendimento({
                 id: ponto.id,
                 identificador: ponto.identificador,
-                tipo: 'mesa',
+                tipo: tipo,
                 status: ponto.status,
                 nome_ponto: ponto.nome_ponto,
                 criado_em: ponto.criado_em,
@@ -248,20 +265,36 @@ const PontoAtendimento = () => {
               await criarOuBuscarPedido(ponto.id);
             } else if (isMounted) {
               // Fallback para mock em caso de erro
+              // Determinar tipo baseado no identificador
+              let tipo = 'mesa';
+              if (id.includes('BALCÃO')) {
+                tipo = 'balcao';
+              } else if (id.includes('COMANDA')) {
+                tipo = 'comanda';
+              }
+              
               const mockPonto = {
                 id: id,
-                identificador: `MESA ${id}`,
-                tipo: 'mesa',
+                identificador: id, // Usar id diretamente, já vem completo
+                tipo: tipo,
                 status: 'disponivel'
               };
               setPontoAtendimento(mockPonto);
             }
           } else if (isMounted) {
             // Fallback para mock em caso de erro
+            // Determinar tipo baseado no identificador
+            let tipo = 'mesa';
+            if (id.includes('BALCÃO')) {
+              tipo = 'balcao';
+            } else if (id.includes('COMANDA')) {
+              tipo = 'comanda';
+            }
+            
             const mockPonto = {
               id: id,
-              identificador: id.includes('BALCÃO') ? id : `MESA ${id}`,
-              tipo: id.includes('BALCÃO') ? 'balcao' : 'mesa',
+              identificador: id, // Usar id diretamente, já vem completo
+              tipo: tipo,
               status: 'disponivel'
             };
             setPontoAtendimento(mockPonto);
@@ -271,10 +304,18 @@ const PontoAtendimento = () => {
         console.error('Erro ao carregar ponto de atendimento:', error);
         if (isMounted) {
           // Fallback para mock em caso de erro
+          // Determinar tipo baseado no identificador
+          let tipo = 'mesa';
+          if (id.includes('BALCÃO')) {
+            tipo = 'balcao';
+          } else if (id.includes('COMANDA')) {
+            tipo = 'comanda';
+          }
+          
           const mockPonto = {
             id: id,
-            identificador: id.includes('BALCÃO') ? id : `MESA ${id}`,
-            tipo: id.includes('BALCÃO') ? 'balcao' : 'mesa',
+            identificador: id, // Usar id diretamente, já vem completo
+            tipo: tipo,
             status: 'disponivel'
           };
           setPontoAtendimento(mockPonto);
@@ -311,14 +352,14 @@ const PontoAtendimento = () => {
     try {
       // Se o pedido foi finalizado ou excluído, restaurar para 'disponivel'
       // Se não foi finalizado nem excluído, verificar se há itens:
-      // - Se há itens: 'ocupada'
+      // - Se há itens: 'ocupado'
       // - Se não há itens: 'aberto'
       let statusParaRestaurar = 'disponivel';
       
       if (!pedidoFinalizado && !pedidoExcluido) {
         // Verificar se há itens no pedido
         const temItens = pedidos && pedidos.length > 0;
-        statusParaRestaurar = temItens ? 'ocupada' : 'aberto';
+        statusParaRestaurar = temItens ? 'ocupado' : 'aberto';
       }
       
       await atendimentoService.atualizarStatus(pontoAtendimento.id, statusParaRestaurar);

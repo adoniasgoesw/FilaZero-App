@@ -87,6 +87,27 @@ const HomePage = ({ currentPage, onNavigate }) => {
     setEstabelecimentoId(7); // ID que existe no banco de dados
   }, []);
 
+  // Função auxiliar para processar caixas abertos
+  const processarCaixasAbertos = (caixasAbertos) => {
+    // Usar lógica real para verificar se o caixa tem mais de 24h
+    const agora = new Date();
+    for (const caixa of caixasAbertos) {
+      const dataAbertura = new Date(caixa.data_abertura);
+      const diffMs = agora - dataAbertura;
+      const diffHours = diffMs / (1000 * 60 * 60);
+      
+      console.log('Caixa ID:', caixa.id);
+      console.log('Data de abertura:', dataAbertura);
+      console.log('Horas abertas:', diffHours);
+      
+      if (diffHours >= 24) {
+        setCaixaWithWarning(caixa);
+        setShowCaixaWarning(true);
+        break; // Mostrar apenas o primeiro caixa com problema
+      }
+    }
+  };
+
   // Função para verificar caixas abertos há mais de 24 horas
   const checkForOldCaixas = async () => {
     if (!estabelecimentoId) return;
@@ -94,31 +115,47 @@ const HomePage = ({ currentPage, onNavigate }) => {
     try {
       // Buscar caixas abertos
       const response = await fetch(`${API_URL}/caixas/abertos/${estabelecimentoId}`);
-      const result = await response.json();
       
-      if (result.success && result.data.caixas.length > 0) {
-        const caixasAbertos = result.data.caixas;
-        
-        // Usar lógica real para verificar se o caixa tem mais de 24h
-        const agora = new Date();
-        for (const caixa of caixasAbertos) {
-          const dataAbertura = new Date(caixa.data_abertura);
-          const diffMs = agora - dataAbertura;
-          const diffHours = diffMs / (1000 * 60 * 60);
-          
-          console.log('Caixa ID:', caixa.id);
-          console.log('Data de abertura:', dataAbertura);
-          console.log('Horas abertas:', diffHours);
-          
-          if (diffHours >= 24) {
-            setCaixaWithWarning(caixa);
-            setShowCaixaWarning(true);
-            break; // Mostrar apenas o primeiro caixa com problema
+      // Verificar se a resposta é válida
+      if (!response.ok) {
+        // Se for 404, o endpoint não existe, então não fazer nada (silenciosamente)
+        if (response.status === 404) {
+          // Endpoint não existe, não é um erro crítico
+          return;
+        }
+        // Para outros erros HTTP, tentar parsear JSON apenas se o content-type for JSON
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          try {
+            const result = await response.json();
+            if (result.success && result.data?.caixas?.length > 0) {
+              processarCaixasAbertos(result.data.caixas);
+            }
+          } catch (parseError) {
+            console.error('Erro ao processar resposta JSON:', parseError);
           }
+        }
+        return;
+      }
+      
+      // Resposta OK, tentar parsear JSON
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const result = await response.json();
+        
+        if (result.success && result.data?.caixas?.length > 0) {
+          processarCaixasAbertos(result.data.caixas);
         }
       }
     } catch (error) {
-      console.error('Erro ao verificar caixas antigos:', error);
+      // Se o erro for de parsing JSON (como quando recebe HTML), apenas logar silenciosamente
+      if (error instanceof SyntaxError && error.message.includes('JSON')) {
+        // Endpoint pode não existir ou retornar HTML, não é um erro crítico
+        return;
+      } else {
+        // Outros erros de rede podem ser logados, mas não são críticos
+        console.error('Erro ao verificar caixas antigos:', error);
+      }
     }
   };
 

@@ -61,7 +61,7 @@ export const createProduct = async (req, res) => {
       INSERT INTO produtos (
         estabelecimento_id, categoria_id, nome, valor_venda, valor_custo,
         imagem_url, estoque_qtd, tempo_preparo_min, status
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, true)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       RETURNING id, nome, valor_venda, valor_custo, imagem_url, 
                 estoque_qtd, tempo_preparo_min, status, criado_em
     `;
@@ -74,7 +74,8 @@ export const createProduct = async (req, res) => {
       valor_custo || null,
       imagem_url || null,
       estoque_qtd || 0,
-      tempo_preparo_min || null
+      tempo_preparo_min || null,
+      true // status - produtos são criados como ativos por padrão
     ];
 
     const result = await client.query(insertQuery, values);

@@ -234,10 +234,8 @@ const ItemsPanel = ({ onInfoClick, isMobile, onBack, estabelecimentoId = 7, onAd
             </div>
           ) : (
             <div 
-              className="overflow-x-auto pb-2 -mx-3 sm:-mx-4 px-3 sm:px-4 w-full" 
+              className="overflow-x-auto pb-2 -mx-3 sm:-mx-4 px-3 sm:px-4 w-full scrollbar-hide" 
               style={{ 
-                scrollbarWidth: 'thin', 
-                scrollbarColor: '#cbd5e1 #f1f5f9',
                 WebkitOverflowScrolling: 'touch',
                 overflowY: 'hidden'
               }}

@@ -203,7 +203,7 @@ const ItemsPanel = ({ onInfoClick, isMobile, onBack, estabelecimentoId = 7, onAd
 
       {/* Conteúdo Principal - Categorias */}
       <div className="flex-1 p-3 sm:p-4 overflow-y-auto">
-        <div className="mb-4">
+        <div className="mb-4 w-full">
           
           {loading ? (
             <div className="flex items-center justify-center h-32">
@@ -233,15 +233,27 @@ const ItemsPanel = ({ onInfoClick, isMobile, onBack, estabelecimentoId = 7, onAd
               </div>
             </div>
           ) : (
-            <div className="flex flex-wrap gap-4">
-              {filteredCategorias.map((categoria) => (
-                <div 
-                  key={categoria.id} 
-                  className="flex flex-col items-center cursor-pointer group hover:scale-105 transition-transform duration-200"
-                  onClick={() => handleCategoriaClick(categoria)}
-                >
+            <div 
+              className="overflow-x-auto pb-2 -mx-3 sm:-mx-4 px-3 sm:px-4 w-full" 
+              style={{ 
+                scrollbarWidth: 'thin', 
+                scrollbarColor: '#cbd5e1 #f1f5f9',
+                WebkitOverflowScrolling: 'touch',
+                overflowY: 'hidden'
+              }}
+            >
+              <div className="flex gap-4 flex-nowrap" style={{ width: 'max-content', flexWrap: 'nowrap' }}>
+                {filteredCategorias.map((categoria) => (
+                  <div 
+                    key={categoria.id} 
+                    className="flex flex-col items-center cursor-pointer group hover:scale-105 transition-transform duration-200 flex-shrink-0"
+                    style={{ minWidth: '80px' }}
+                    onClick={() => handleCategoriaClick(categoria)}
+                  >
                   {/* Imagem redonda com bordas azuis */}
-                  <div className="w-20 h-20 rounded-full border-4 border-blue-500 overflow-hidden bg-gray-50 flex items-center justify-center mb-2 group-hover:border-blue-600 transition-colors duration-200">
+                  <div className={`w-20 h-20 rounded-full border-4 overflow-hidden bg-gray-50 flex items-center justify-center mb-2 group-hover:border-blue-600 transition-colors duration-200 ${
+                    categoriaSelecionada?.id === categoria.id ? 'border-blue-600' : 'border-blue-500'
+                  }`}>
                     {categoria.imagem_url ? (
                       <img 
                         src={categoria.imagem_url} 
@@ -262,11 +274,12 @@ const ItemsPanel = ({ onInfoClick, isMobile, onBack, estabelecimentoId = 7, onAd
                   </div>
                   
                   {/* Nome da categoria */}
-                  <span className="text-sm font-medium text-gray-800 text-center max-w-20 truncate group-hover:text-blue-600 transition-colors duration-200">
+                  <span className="text-sm font-medium text-gray-800 text-center max-w-20 truncate group-hover:text-blue-600 transition-colors duration-200 whitespace-nowrap">
                     {categoria.nome}
                   </span>
-                </div>
-              ))}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

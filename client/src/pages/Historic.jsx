@@ -273,9 +273,19 @@ const Historic = () => {
       
       {/* Conteúdo da página - Caixa 2 */}
       <div className="flex-1 md:ml-20 min-w-0">
-        <div className="h-[90vh] lg:h-screen flex flex-col overflow-hidden" style={{
-          height: window.innerWidth <= 1100 ? '90vh' : '100vh'
-        }}>
+        <div 
+          className="flex flex-col overflow-hidden"
+          style={{
+            height: window.innerWidth <= 768 
+              ? 'calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px))'
+              : window.innerWidth <= 1100 
+                ? '90vh' 
+                : '100vh',
+            paddingBottom: window.innerWidth <= 768 
+              ? 'calc(4rem + env(safe-area-inset-bottom, 0px))'
+              : '0'
+          }}
+        >
           {/* Caixa 1 - Header: Ícone, barra de pesquisa e botão caixa */}
           <div className="flex items-center gap-2 sm:gap-4 p-3 sm:p-4 md:p-6 bg-white flex-shrink-0 min-w-0">
             {/* History Icon */}

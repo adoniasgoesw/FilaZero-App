@@ -737,7 +737,14 @@ const PontoAtendimento = () => {
   }
 
   return (
-    <div className="h-screen bg-gray-50 flex overflow-hidden">
+    <div 
+      className="bg-gray-50 flex overflow-hidden"
+      style={{
+        height: window.innerWidth <= 768 
+          ? 'calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px))'
+          : '100vh'
+      }}
+    >
       {/* Sidebar - Esquerda */}
       <Sidebar 
         currentPage="home" 
@@ -754,7 +761,7 @@ const PontoAtendimento = () => {
       />
       
       {/* Conteúdo Principal - Direita */}
-      <div className="flex-1 md:ml-20 p-2 sm:p-3 z-100 overflow-hidden h-screen">
+      <div className="flex-1 md:ml-20 p-2 sm:p-3 z-100 overflow-hidden h-full">
         <div className="h-full flex flex-col md:flex-row gap-2 sm:gap-3 overflow-hidden max-h-full">
           {/* Painel Detalhes/Pagamentos - Responsivo */}
           <div className={`w-full md:w-[40%] lg:w-[30%] h-full ${isMobile && !showDetailsPanel ? 'hidden' : ''}`}>

@@ -83,7 +83,16 @@ const Landing = () => {
   };
 
   return (
-    <div className="h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 relative overflow-hidden">
+    <div 
+      className="bg-gradient-to-br from-gray-50 via-white to-gray-100 relative overflow-hidden"
+      style={{
+        minHeight: '100dvh',
+        paddingTop: 'env(safe-area-inset-top, 0px)',
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        paddingLeft: 'env(safe-area-inset-left, 0px)',
+        paddingRight: 'env(safe-area-inset-right, 0px)'
+      }}
+    >
       {/* Elementos animados no fundo */}
       <div className="absolute inset-0 overflow-hidden backdrop-blur-sm">
         {/* Círculos animados em gray-900 com maior opacidade */}
@@ -172,9 +181,19 @@ const Landing = () => {
         </div>
 
         {/* Layout Mobile */}
-        <div className="md:hidden flex flex-col min-h-screen px-4">
+        <div 
+          className="md:hidden flex flex-col px-4"
+          style={{
+            minHeight: 'calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px))'
+          }}
+        >
           {/* Header Mobile */}
-          <div className="pt-6 pb-3">
+          <div 
+            className="pt-6 pb-3"
+            style={{
+              paddingTop: 'calc(1.5rem + env(safe-area-inset-top, 0px))'
+            }}
+          >
             <div className="flex items-center justify-between">
               {/* Logo no canto esquerdo */}
               <h1 className="text-lg sm:text-xl font-bold text-gray-900">
@@ -220,7 +239,12 @@ const Landing = () => {
           </div>
 
           {/* Footer Mobile */}
-          <div className="text-center pb-4">
+          <div 
+            className="text-center pb-4"
+            style={{
+              paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))'
+            }}
+          >
             <p className="text-xs text-gray-500">
               © 2024 FilaZero. Todos os direitos reservados.
             </p>

@@ -259,7 +259,14 @@ const Products = () => {
       }} isManagementPage={true} />
       
       {/* Conteúdo da página - Caixa 2 */}
-      <div className="flex-1 md:ml-20 h-screen flex flex-col overflow-hidden">
+      <div 
+        className="flex-1 md:ml-20 flex flex-col overflow-hidden"
+        style={{
+          height: window.innerWidth <= 768 
+            ? 'calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px))'
+            : '100vh'
+        }}
+      >
         {/* Caixa 1 - Header: Botão voltar, barra de pesquisa e botão adicionar */}
         <div className="flex items-center gap-4 p-4 sm:p-6 bg-white flex-shrink-0">
           <BackButton onClick={handleBack} isRound={true} />
